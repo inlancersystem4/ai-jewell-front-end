@@ -2,6 +2,10 @@ import { Link } from "react-router";
 import { Button, Input } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+import { post } from "@/utils/axiosWrapper";
+import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 
 const schema = z.object({
@@ -11,15 +15,42 @@ const schema = z.object({
 });
 
 export default function SignUp() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
+  const signUpFn = async (data) => {
+    const formData = new FormData();
+    formData.append("user_email", data.email);
+    formData.append("user_password", data.password);
+    formData.append("user_password", data.password);
+
+    try {
+      const response = await post("sign-in", formData);
+      if (response.success == 1) {
+        toast.success(response.message);
+        navigate("/");
+      } else {
+        toast.error(response.message);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("An unexpected error occurred. Please try again.");
+    }
   };
+
+  const mutation = useMutation({
+    mutationFn: (formData) => signUpFn(formData),
+  });
+
+  const onSubmit = (data) => {
+    mutation.mutate(data);
+  };
+
   return (
     <div className="form-card">
       <div className="space-y-2">
@@ -59,8 +90,12 @@ export default function SignUp() {
             <p className="text-bright-red text-xs">{errors.password.message}</p>
           )}
         </div>
-        <Button type="submit" className="form-btn">
-          Create account
+        <Button
+          type="submit"
+          className="form-btn"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Creating..." : "Create account"}
         </Button>
       </form>
       <p className="text-center text-base font-medium text-onyx-black block">

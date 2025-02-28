@@ -4,7 +4,6 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-
 const initialState = {
   jwtToken: cookies.get("jwtToken") || "",
   expired_at: parseInt(cookies.get("expired_at") || "0"),

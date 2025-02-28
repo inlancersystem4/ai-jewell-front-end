@@ -2,22 +2,52 @@ import { Link } from "react-router";
 import { Button, Input } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+import { post } from "@/utils/axiosWrapper";
+import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 
 const schema = z.object({
-  username: z.string().min(1, "Username is required"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
 
+  const signInFn = async (data) => {
+    const formData = new FormData();
+    formData.append("user_email", data.email);
+    formData.append("user_password", data.password);
+    formData.append("user_password", data.password);
+
+    try {
+      const response = await post("sign-in", formData);
+      if (response.success == 1) {
+        toast.success(response.message);
+        navigate("/");
+      } else {
+        toast.error(response.message);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("An unexpected error occurred. Please try again.");
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: (formData) => signInFn(formData),
+  });
+
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
+    mutation.mutate(data);
   };
 
   return (
@@ -29,12 +59,12 @@ export default function Login() {
         <div className="space-y-1">
           <Input
             type="text"
-            placeholder="Username"
-            {...register("username")}
-            className={`${errors.username ? "!border-bright-red" : ""}`}
+            placeholder="Email"
+            {...register("email")}
+            className={`${errors.email ? "!border-bright-red" : ""}`}
           />
-          {errors.username && (
-            <p className="text-bright-red text-xs">{errors.username.message}</p>
+          {errors.email && (
+            <p className="text-bright-red text-xs">{errors.email.message}</p>
           )}
         </div>
         <div className="space-y-1.5">
@@ -58,8 +88,12 @@ export default function Login() {
             Forgot Password?
           </Link>
         </div>
-        <Button type="submit" className="form-btn">
-          Login
+        <Button
+          type="submit"
+          className="form-btn"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Login in..." : "Login"}
         </Button>
       </form>
       <p className="text-center text-base font-medium text-onyx-black block">
@@ -77,7 +111,7 @@ export default function Login() {
         </span>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <Button className="form-social-btn">
+        <Button className="form-social-btn" disabled={mutation.isPending}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -111,7 +145,7 @@ export default function Login() {
           </svg>
           Google
         </Button>
-        <Button className="form-social-btn">
+        <Button className="form-social-btn" disabled={mutation.isPending}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
