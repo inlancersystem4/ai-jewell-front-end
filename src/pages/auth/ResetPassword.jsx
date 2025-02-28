@@ -2,9 +2,11 @@ import { Button, Input } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useNavigate, useSearchParams } from "react-router";
 import { post } from "@/utils/axiosWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
+import { useEffect } from "react";
 
 const schema = z
   .object({
@@ -19,22 +21,28 @@ const schema = z
   });
 
 export default function ResetPassword() {
+  const navigate = useNavigate();
+  let [searchParams] = useSearchParams();
+
+  const token = searchParams.get("id");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
-
+>close
   const forgotPasswordFn = async (data) => {
     const formData = new FormData();
-    formData.append("user_email", data.email);
-    formData.append("user_password", data.password);
-    formData.append("user_password", data.password);
+    formData.append("new_password", data.password);
+    formData.append("confirm_password", data.confirmPassword);
+    formData.append("token", token);
 
     try {
-      const response = await post("sign-in", formData);
+      const response = await post("reset-password", formData);
       if (response.success == 1) {
         toast.success(response.message);
+        // navigate("/");
       } else {
         toast.error(response.message);
       }
@@ -51,6 +59,12 @@ export default function ResetPassword() {
   const onSubmit = (data) => {
     mutation.mutate(data);
   };
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/auth");
+    }
+  }, [navigate, searchParams, token]);
 
   return (
     <div className="form-card">

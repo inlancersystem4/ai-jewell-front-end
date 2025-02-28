@@ -6,6 +6,8 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { post } from "@/utils/axiosWrapper";
 import { useMutation } from "@tanstack/react-query";
+import { setJwtToken } from "@/redux/actions";
+import { useDispatch } from "react-redux";
 import { z } from "zod";
 
 const schema = z.object({
@@ -16,6 +18,7 @@ const schema = z.object({
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -25,13 +28,14 @@ export default function SignUp() {
 
   const signUpFn = async (data) => {
     const formData = new FormData();
+    formData.append("user_name", data.name);
     formData.append("user_email", data.email);
-    formData.append("user_password", data.password);
     formData.append("user_password", data.password);
 
     try {
-      const response = await post("sign-in", formData);
+      const response = await post("sign-up", formData);
       if (response.success == 1) {
+        dispatch(setJwtToken(response.data.session_token));
         toast.success(response.message);
         navigate("/");
       } else {
