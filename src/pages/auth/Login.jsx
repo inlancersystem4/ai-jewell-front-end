@@ -1,18 +1,55 @@
 import { Link } from "react-router";
+import { Button, Input } from "@headlessui/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(schema) });
+
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+  };
+
   return (
     <div className="form-card">
       <div className="space-y-2">
         <h1>Login your account</h1>
       </div>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-1">
-          <input type="text" placeholder="Username" />
+          <Input
+            type="text"
+            placeholder="Username"
+            {...register("username")}
+            className={`${errors.username ? "!border-bright-red" : ""}`}
+          />
+          {errors.username && (
+            <p className="text-bright-red text-xs">{errors.username.message}</p>
+          )}
         </div>
         <div className="space-y-1.5">
           <div className="space-y-1">
-            <input type="Password" placeholder="Password" />
+            <Input
+              type="password"
+              placeholder="Password"
+              {...register("password")}
+              className={`${errors.password ? "!border-bright-red" : ""}`}
+            />
+            {errors.password && (
+              <p className="text-bright-red text-xs">
+                {errors.password.message}
+              </p>
+            )}
           </div>
           <Link
             to="/auth/forgot-password"
@@ -21,7 +58,9 @@ export default function Login() {
             Forgot Password?
           </Link>
         </div>
-        <button className="form-btn">Login</button>
+        <Button type="submit" className="form-btn">
+          Login
+        </Button>
       </form>
       <p className="text-center text-base font-medium text-onyx-black block">
         Don’t have an account?
@@ -38,7 +77,7 @@ export default function Login() {
         </span>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <button className="form-social-btn">
+        <Button className="form-social-btn">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -46,7 +85,7 @@ export default function Login() {
             viewBox="0 0 20 20"
             fill="none"
           >
-            <g clip-path="url(#clip0_115_2011)">
+            <g clipPath="url(#clip0_115_2011)">
               <path
                 d="M20 10.2391C20 9.56517 19.9333 8.86952 19.8222 8.21735H10.2V12.0652H15.7111C15.4888 13.3043 14.7555 14.3913 13.6666 15.0869L16.9555 17.5869C18.8888 15.826 20 13.2608 20 10.2391Z"
                 fill="#4280EF"
@@ -71,8 +110,8 @@ export default function Login() {
             </defs>
           </svg>
           Google
-        </button>
-        <button className="form-social-btn">
+        </Button>
+        <Button className="form-social-btn">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -87,7 +126,7 @@ export default function Login() {
             />
           </svg>
           Facebook
-        </button>
+        </Button>
       </div>
     </div>
   );
