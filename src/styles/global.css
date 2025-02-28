@@ -1,1 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Manrope", "sans-serif";
+  --font-sans: "Inter", "sans-serif";
+  --color-charcoal-gray: #3e3e3e;
+  --color-slate-gray: #9ca3af;
+  --color-light-gray: #d1d5db;
+  --color-dark-gray: #6b7280;
+  --color-muted-gray: #686a6cb2;
+  --color-onyx-black: #111827;
+  --color-off-white: #f2f3f3;
+  --color-bright-red: #fa3838;
+  --color-crimson-red: #ef4444;
+  --color-warm-gray: #9c9da0;
+  --color-cool-gray: #e5e7eb;
+  --color-medium-gray: #555555;
+  --color-silver-gray: #888888;
+  --color-platinum-gray: #eeeeee;
+  --color-steel-gray: #585858;
+  --color-dim-gray: #666666;
+  --color-indigo-blue: #4f46e5;
+  --color-ghost-white: #f3f4f5;
+  --color-snow-white: #f7f7f7;
+  --color-neutral-gray: #787a84;
+  --color-gunmetal-gray: #4b5563;
+  --color-slate-silver: #9c9da0;
+  --color-misty-gray: #edeef2;
+}
+
+.form-card {
+  @apply bg-white p-11 rounded-3xl flex flex-col gap-6;
+  box-shadow: 0px 15px 60px -4px #10182814;
+}
+
+.form-card h1 {
+  @apply font-bold font-display text-3xl text-charcoal-gray text-center;
+}
+
+.form-card h6 {
+  @apply font-medium text-base text-center text-dark-gray;
+}
+
+.form-social-btn {
+  @apply w-full py-2.5 px-5 rounded-full h-12 flex items-center justify-center gap-2 font-semibold text-base disabled:opacity-40 text-dark-gray bg-off-white hover:bg-cool-gray;
+}
+
+.form-btn {
+  @apply w-full rounded-full py-2.5 px-2.5 h-12 flex items-center justify-center bg-muted-gray hover:bg-warm-gray disabled:opacity-40 font-semibold text-base text-white backdrop-blur-[2px];
+}
+
+.form-card input {
+  @apply border border-light-gray py-3 px-5 w-full rounded-full text-lg placeholder:text-slate-gray h-14;
+  box-shadow: 0px 1px 2px 0px #1018280d;
+}
