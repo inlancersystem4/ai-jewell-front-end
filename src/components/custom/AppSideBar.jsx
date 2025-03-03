@@ -1,9 +1,13 @@
 import lightLogo from "/logo-light.png";
 import { Button, Input } from "@headlessui/react";
 import { FolderPlus, Plus, RotateCcw, Trash2, Folders } from "lucide-react";
+import { useLocation } from "react-router";
 import { Link } from "react-router";
 
 export default function AppSideBar() {
+  const location = useLocation();
+  const projectActive = location.pathname;
+
   return (
     <aside className="app-sidebar">
       <div className="divide-y divide-cool-gray">
@@ -31,7 +35,12 @@ export default function AppSideBar() {
           <RotateCcw />
           History
         </Button>
-        <Link to="/projects" className="sidebar-btn">
+        <Link
+          to="/projects"
+          className={`sidebar-btn ${
+            projectActive === "/projects" ? "active" : ""
+          }`}
+        >
           <Folders />
           Projects
         </Link>
