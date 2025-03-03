@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button, Input } from "@headlessui/react";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router";
@@ -45,7 +46,6 @@ export default function Login() {
     }
   };
 
-
   const mutation = useMutation({
     mutationFn: (formData) => signInFn(formData),
   });
@@ -53,6 +53,42 @@ export default function Login() {
   const onSubmit = (data) => {
     mutation.mutate(data);
   };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfoResponse = await fetch(
+          "https://www.googleapis.com/oauth2/v2/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`,
+            },
+          }
+        );
+
+        const userInfo = await userInfoResponse.json();
+        userInfo.login_type = 2;
+
+        const formData = new FormData();
+        formData.append("user_info", JSON.stringify(userInfo));
+
+        const response = await post("get-google-info", formData);
+        if (response.success) {
+          dispatch(setJwtToken(response.data.session_token));
+          toast.success("Login successful");
+          navigate("/");
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        console.error("Google login failed", error);
+        toast.error("Google login failed. Please try again.");
+      }
+    },
+    onError: () => {
+      toast.error("Google login failed");
+    },
+  });
 
   return (
     <div className="form-card">
@@ -115,7 +151,11 @@ export default function Login() {
         </span>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <Button className="form-social-btn" disabled={mutation.isPending}>
+        <Button
+          className="form-social-btn"
+          onClick={() => googleLogin()}
+          disabled={mutation.isPending}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"

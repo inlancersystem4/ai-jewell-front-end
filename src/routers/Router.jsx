@@ -8,6 +8,7 @@ const SignUp = lazy(() => import("@/pages/auth/SignUp"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
 const App = lazy(() => import("@/pages/App"));
+const Projects = lazy(() => import("@/pages/Projects"));
 
 const ChatLayout = lazy(() => import("@/layout/ChatLayout"));
 const AuthLayout = lazy(() => import("@/layout/AuthLayout"));
@@ -21,6 +22,7 @@ function Router() {
           <Route element={<AuthGuard />}>
             <Route path="" element={<ChatLayout />}>
               <Route index element={<App />} />
+              <Route path="projects" element={<Projects />} />
             </Route>
           </Route>
           <Route path="/auth" element={<AuthLayout />}>

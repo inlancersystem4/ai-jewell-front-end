@@ -56,3 +56,36 @@
   @apply border border-light-gray py-3 px-5 w-full rounded-full text-lg placeholder:text-slate-gray h-14;
   box-shadow: 0px 1px 2px 0px #1018280d;
 }
+
+.app-sidebar {
+  @apply w-full max-w-[272px] border-e border-cool-gray h-full overflow-y-auto px-2.5 py-4 flex flex-col justify-between gap-12;
+}
+
+.sidebar-btn {
+  @apply py-2 px-2.5 rounded-lg flex items-center justify-start gap-2  w-full text-sm font-medium text-dark-gray;
+}
+
+.sidebar-btn svg {
+  @apply size-4;
+}
+
+.sidebar-btn:hover,
+.sidebar-btn.active {
+  @apply bg-snow-white text-onyx-black;
+}
+
+.app-header {
+  @apply flex items-center justify-between py-2 px-3;
+}
+
+.custom-container {
+  @apply w-full max-w-5xl mx-auto px-3;
+}
+
+.project-box {
+  @apply w-full flex items-center justify-between bg-snow-white px-7 py-9 rounded-lg;
+}
+
+.project-pagination-btn {
+  @apply text-sm rounded-lg text-center bg-ghost-white py-1.5 px-3.5 disabled:opacity-40;
+}

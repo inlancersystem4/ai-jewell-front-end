@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router";
 import { post } from "@/utils/axiosWrapper";
 import { useMutation } from "@tanstack/react-query";
+import { setJwtToken } from "@/redux/actions";
+import { useDispatch } from "react-redux";
 import { z } from "zod";
 import { useEffect } from "react";
 
@@ -22,6 +24,8 @@ const schema = z
 
 export default function ResetPassword() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   let [searchParams] = useSearchParams();
 
   const token = searchParams.get("id");
@@ -31,7 +35,7 @@ export default function ResetPassword() {
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
->close
+
   const forgotPasswordFn = async (data) => {
     const formData = new FormData();
     formData.append("new_password", data.password);
@@ -41,8 +45,9 @@ export default function ResetPassword() {
     try {
       const response = await post("reset-password", formData);
       if (response.success == 1) {
+        dispatch(setJwtToken(response.data.session_token));
         toast.success(response.message);
-        // navigate("/");
+        navigate("/");
       } else {
         toast.error(response.message);
       }
