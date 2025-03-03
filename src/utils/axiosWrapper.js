@@ -32,7 +32,7 @@ const handleError = (error) => {
   if (axios.isAxiosError(error)) {
     const statusCode = error.response?.status;
     if (statusCode == 401) {
-      // window.location.href = "/auth";
+      window.location.href = "/auth";
     } else {
       console.error("Error Response:", error.response?.data);
       console.error("Error Status:", statusCode);

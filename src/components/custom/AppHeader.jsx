@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useState } from "react";
 import { X } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 const schema = z
@@ -41,7 +41,7 @@ export default function AppHeader() {
   const navigate = useNavigate();
 
   let [logoutIsOpen, setLogoutIsOpen] = useState(false);
-  let [passwordIsOpen, setPasswordIsOpen] = useState(true);
+  let [passwordIsOpen, setPasswordIsOpen] = useState(false);
 
   async function logout() {
     try {
@@ -94,6 +94,27 @@ export default function AppHeader() {
     mutation.mutate(data);
   };
 
+  async function profileFN() {
+    try {
+      const response = await post("user-profile");
+      if (response.success == 1) {
+        return response.data;
+      } else {
+        toast.error(response.message);
+        return null;
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("An unexpected error occurred. Please try again.");
+      throw e;
+    }
+  }
+
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: profileFN,
+  });
+
   return (
     <header className="app-header">
       <div className=""></div>
@@ -101,7 +122,11 @@ export default function AppHeader() {
         <Menu>
           <MenuButton>
             <div className="header-avatar">
-              <Avatar name="Jeet" size="32" className="rounded-full" />
+              <Avatar
+                name={profileData ? profileData.user_name : "AI"}
+                size="32"
+                className="rounded-full"
+              />
             </div>
           </MenuButton>
           <MenuItems

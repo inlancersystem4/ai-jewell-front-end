@@ -12,11 +12,14 @@ import { useDebouncedCallback } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { post } from "@/utils/axiosWrapper";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AlertDialog from "@/components/ui/AlertDialog";
 
 export default function Projects() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteProjectId, setDeleteProjectId] = useState(null);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   async function projectListFn() {
     const formData = new FormData();
@@ -25,7 +28,7 @@ export default function Projects() {
 
     try {
       const response = await post("p/project-list", formData);
-      if (response.success == 1) {
+      if (response.success === 1) {
         return response.data.project_list;
       } else {
         toast.error(response.message);
@@ -40,27 +43,50 @@ export default function Projects() {
 
   const handleSearch = useDebouncedCallback((value) => {
     setSearch(value);
-    refetch();
-  }, 3000);
+  }, 1000);
 
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ["projectList", currentPage],
+    queryKey: ["projectList", search, currentPage],
     queryFn: projectListFn,
+    keepPreviousData: true,
   });
 
   const handlePrev = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-      refetch();
     }
   };
 
   const handleNext = () => {
     if (data && currentPage < data.pagination.total_pages) {
       setCurrentPage(currentPage + 1);
-      refetch();
     }
   };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteProjectId) return;
+    const formData = new FormData();
+    formData.append("project_id", deleteProjectId);
+
+    try {
+      const response = await post("p/project-delete", formData);
+      if (response.success) {
+        toast.success("Project deleted successfully.");
+        setIsAlertOpen(false);
+        setCurrentPage(1);
+        refetch();
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete project.");
+    }
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [search, currentPage, refetch]);
 
   return (
     <div className="py-4 custom-container">
@@ -88,7 +114,14 @@ export default function Projects() {
           <div className="space-y-2 py-4">
             <ul className="grid grid-cols-2 gap-6">
               {data.projects.map((project) => (
-                <ProjectBox key={project.id} project={project} />
+                <ProjectBox
+                  key={project.id}
+                  project={project}
+                  onDelete={() => {
+                    setDeleteProjectId(project.project_id);
+                    setIsAlertOpen(true);
+                  }}
+                />
               ))}
             </ul>
             <div className="flex items-center justify-end gap-2">
@@ -117,21 +150,28 @@ export default function Projects() {
           </div>
         )}
       </div>
+      <AlertDialog
+        isOpen={isAlertOpen}
+        setClose={() => setIsAlertOpen(false)}
+        ok={handleDeleteConfirm}
+        title="Delete Project"
+        description="Are you sure you want to delete this project? This action cannot be undone."
+      />
     </div>
   );
 }
 
-function ProjectBox() {
+function ProjectBox({ project, onDelete }) {
   return (
     <li className="project-box">
-      <h4 className="text-xl text-black">UI UX Info</h4>
+      <h4 className="text-xl text-black">{project.project_title}</h4>
       <Menu>
         <MenuButton className="min-w-10 min-h-10 max-w-10 max-h-10 flex items-center justify-center">
           <EllipsisVertical className="size-4" />
         </MenuButton>
         <MenuItems
-          className="bg-white shadow rounded-lg flex flex-col w-44 divide-y divide-snow-white border border-ghost-white"
           anchor="bottom"
+          className="bg-white shadow  rounded-lg flex flex-col w-44 divide-y divide-snow-white border border-ghost-white"
         >
           <MenuItem className="w-full flex items-center justify-start gap-2 py-1.5 px-2.5 text-sm hover:bg-ghost-white">
             <Button>
@@ -140,7 +180,7 @@ function ProjectBox() {
             </Button>
           </MenuItem>
           <MenuItem className="w-full flex items-center justify-start gap-2 py-1.5 px-2.5 text-sm text-crimson-red hover:bg-ghost-white">
-            <Button>
+            <Button onClick={onDelete}>
               <Trash2 size={14} />
               Delete
             </Button>
