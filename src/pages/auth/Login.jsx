@@ -67,10 +67,10 @@ export default function Login() {
         );
 
         const userInfo = await userInfoResponse.json();
-        userInfo.login_type = 2;
 
         const formData = new FormData();
         formData.append("user_info", JSON.stringify(userInfo));
+        formData.append("login_type", 2);
 
         const response = await post("get-google-info", formData);
         if (response.success) {

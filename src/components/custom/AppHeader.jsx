@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import AlertDialog from "@/components/ui/AlertDialog";
 import { z } from "zod";
 
 const schema = z
@@ -144,39 +145,14 @@ export default function AppHeader() {
           </MenuItems>
         </Menu>
       </div>
-      <Dialog
-        open={logoutIsOpen}
-        onClose={() => setLogoutIsOpen(false)}
-        className="relative z-50"
-      >
-        <DialogBackdrop className="fixed inset-0 bg-black/30" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-md w-full space-y-6  bg-white p-6">
-            <div className="space-y-2">
-              <DialogTitle className="font-bold text-bright-red">
-                Log Out
-              </DialogTitle>
-              <p className="text-sm text-muted-gray">
-                Are you sure you want to Log Out your account?
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                className="w-full text-xs font-medium text-onyx-black rounded-md border border-cool-gray py-2.5"
-                onClick={() => setLogoutIsOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="w-full text-xs font-medium text-white bg-warm-gray rounded-md border border-cool-gray py-2.5"
-                onClick={logout}
-              >
-                Yes, Log out
-              </button>
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
+      <AlertDialog
+        isOpen={logoutIsOpen}
+        setClose={() => setLogoutIsOpen(false)}
+        ok={logout}
+        title="Log Out"
+        isLogOut={true}
+        description="Are you sure you want to Log Out your account?"
+      />
       <Dialog
         open={passwordIsOpen}
         onClose={() => setPasswordIsOpen(false)}

@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import AppSideBar from "@/components/custom/AppSideBar";
 import AppHeader from "@/components/custom/AppHeader";
+import AppProject from "@/components/custom/AddProject";
 
 export default function ChatLayout() {
   return (
@@ -12,6 +13,7 @@ export default function ChatLayout() {
           <Outlet />
         </div>
       </section>
+      <AppProject />
     </main>
   );
 }

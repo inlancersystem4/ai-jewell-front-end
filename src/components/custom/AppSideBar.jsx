@@ -1,5 +1,5 @@
 import lightLogo from "/logo-light.png";
-import { Button, Input } from "@headlessui/react";
+import { Button } from "@headlessui/react";
 import { FolderPlus, Plus, RotateCcw, Trash2, Folders } from "lucide-react";
 import { useLocation } from "react-router";
 import { Link } from "react-router";
@@ -36,9 +36,9 @@ export default function AppSideBar() {
           History
         </Button>
         <Link
-          to="/projects"
+          to="/p"
           className={`sidebar-btn ${
-            projectActive === "/projects" ? "active" : ""
+            projectActive === "/p" ? "active" : ""
           }`}
         >
           <Folders />

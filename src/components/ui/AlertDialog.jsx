@@ -12,6 +12,7 @@ export default function AlertDialog({
   ok,
   title,
   description,
+  isLogOut,
 }) {
   const handleClose = () => setClose(false);
   const handleConfirm = () => ok();
@@ -55,7 +56,7 @@ export default function AlertDialog({
                 className="w-full text-xs font-medium text-white bg-warm-gray rounded-md border border-cool-gray py-2"
                 onClick={handleConfirm}
               >
-                Delete
+                {isLogOut ? "Yes, Log Out" : "Delete"}
               </Button>
             </div>
           </div>

@@ -22,7 +22,7 @@ function Router() {
           <Route element={<AuthGuard />}>
             <Route path="" element={<ChatLayout />}>
               <Route index element={<App />} />
-              <Route path="projects" element={<Projects />} />
+              <Route path="p" element={<Projects />} />
             </Route>
           </Route>
           <Route path="/auth" element={<AuthLayout />}>
