@@ -2,9 +2,9 @@ import lightLogo from "/logo-light.png";
 import { Button } from "@headlessui/react";
 import { FolderPlus, Plus, RotateCcw, Trash2, Folders } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { Link, useLocation, useParams } from "react-router";
+import { Link, useLocation, useParams, useNavigate } from "react-router";
 import { post } from "@/utils/axiosWrapper";
-import { setAddProject } from "@/redux/actions";
+import { setAddProject, setConversationRefetch } from "@/redux/actions";
 import AlertDialog from "@/components/ui/AlertDialog";
 import AiChatList from "./AiChatsList";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { useState } from "react";
 export default function AppSideBar() {
   const location = useLocation();
   const { id: conversation, pid: projectID } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const projectActive = location.pathname;
@@ -27,6 +28,12 @@ export default function AppSideBar() {
     try {
       const response = await post("c/chat-delete", formData);
       if (response.success == 1) {
+        dispatch(setConversationRefetch(true));
+        if (projectID) {
+          navigate(`/p/${projectID}`);
+        } else {
+          navigate("/");
+        }
         toast.success("Project deleted successfully.");
       } else {
         toast.error(response.message);

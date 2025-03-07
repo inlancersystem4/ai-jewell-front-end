@@ -2,11 +2,19 @@ import { Link, useParams, useLocation } from "react-router";
 import { post } from "@/utils/axiosWrapper";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { setConversationRefetch } from "@/redux/actions";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 
 export default function AiChatList() {
+  const conversationRefetch = useSelector(
+    (state) => state.c.conversationRefetch
+  );
+
   const location = useLocation();
+  const dispatch = useDispatch();
+
   const { pid: projectID } = useParams();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +38,8 @@ export default function AiChatList() {
       console.error(e);
       toast.error("An unexpected error occurred. Please try again.");
       throw e;
+    } finally {
+      dispatch(setConversationRefetch(false));
     }
   }
 
@@ -43,6 +53,12 @@ export default function AiChatList() {
       refetch();
     }
   }, [projectID, refetch, location]);
+
+  useEffect(() => {
+    if (conversationRefetch) {
+      refetch();
+    }
+  }, [conversationRefetch, refetch]);
 
   return (
     <ul className="px-2.5">

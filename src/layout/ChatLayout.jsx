@@ -5,9 +5,9 @@ import AppProject from "@/components/custom/AddProject";
 
 export default function ChatLayout() {
   return (
-    <main className="w-full flex items-stretch h-dvh">
+    <main className="w-full flex items-stretch h-dvh overflow-hidden">
       <AppSideBar />
-      <section className="w-full h-full flex flex-col relative">
+      <section className="w-full h-full flex flex-col relative overflow-y-auto">
         <AppHeader />
         <div className="h-full w-full pt-12">
           <Outlet />
