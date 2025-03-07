@@ -1,3 +1,5 @@
+import AIConversationLayout from "@/layout/AiConversation";
+
 export default function App() {
-  return <h1>APP</h1>;
+  return <AIConversationLayout />;
 }

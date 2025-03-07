@@ -14,28 +14,48 @@ import { post } from "@/utils/axiosWrapper";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import {
+  setAddProject,
+  setProjectRefetch,
+  setRenameProjectData,
+} from "@/redux/actions";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
 });
 
 export default function AppProject() {
+  const dispatch = useDispatch();
+  const projectOpener = useSelector((state) => state.p.addProjectOpen);
+  const renameData = useSelector((state) => state.p.reNameProjectData);
+
   let [isOpen, setIsOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({ resolver: zodResolver(schema) });
 
   const projectAddFn = async (data) => {
     const formData = new FormData();
-    formData.append("project_id", "");
+    formData.append(
+      "project_id",
+      renameData.project_id ? renameData.project_id : ""
+    );
     formData.append("project_name", data.name);
 
     try {
       const response = await post("p/project-add-edit", formData);
       if (response.success == 1) {
+        if (renameData.project_id) {
+          dispatch(setRenameProjectData(""));
+          reset();
+        }
+        dispatch(setProjectRefetch(true));
         toast.success(response.message);
       } else {
         toast.error(response.message);
@@ -43,6 +63,8 @@ export default function AppProject() {
     } catch (e) {
       console.error(e);
       toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      onClose();
     }
   };
 
@@ -54,13 +76,30 @@ export default function AppProject() {
     mutation.mutate(data);
   };
 
+  const onClose = () => {
+    dispatch(setAddProject(false));
+    reset();
+  };
+
+  useEffect(() => {
+    if (projectOpener) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [projectOpener]);
+
+  useEffect(() => {
+    if (renameData.project_title) {
+      reset({
+        name: renameData.project_title,
+      });
+    }
+  }, [renameData, reset]);
+
   return (
     <>
-      <Dialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="relative z-50"
-      >
+      <Dialog open={isOpen} onClose={onClose} className="relative z-50">
         <DialogBackdrop className="fixed inset-0 bg-[#A4A3A366]" />
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -71,7 +110,7 @@ export default function AppProject() {
               <DialogTitle className="font-medium text-sm text-onyx-black">
                 Create a new project
               </DialogTitle>
-              <Button>
+              <Button type="button" onClick={onClose}>
                 <X size={18} />
               </Button>
             </div>
@@ -101,8 +140,9 @@ export default function AppProject() {
             </div>
             <div className="border-t border-[#F3F4F6] pt-4 flex items-center justify-end gap-4">
               <button
+                type="button"
                 className="px-3 py-2 rounded-md text-center bg-misty-gray font-medium text-xs text-[#808183] disabled:opacity-40"
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
                 disabled={mutation.isPending}
               >
                 Cancel

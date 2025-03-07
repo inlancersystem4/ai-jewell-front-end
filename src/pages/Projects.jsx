@@ -6,6 +6,7 @@ import {
   EllipsisVertical,
   Pen,
   Trash2,
+  Plus,
 } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useDebouncedCallback } from "use-debounce";
@@ -13,9 +14,18 @@ import { useQuery } from "@tanstack/react-query";
 import { post } from "@/utils/axiosWrapper";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AlertDialog from "@/components/ui/AlertDialog";
+import {
+  setAddProject,
+  setRenameProjectData,
+  setProjectRefetch,
+} from "@/redux/actions";
 
 export default function Projects() {
+  const dispatch = useDispatch();
+  const projectRefetch = useSelector((state) => state.p.projectRefetch);
+
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteProjectId, setDeleteProjectId] = useState(null);
@@ -28,7 +38,7 @@ export default function Projects() {
 
     try {
       const response = await post("p/project-list", formData);
-      if (response.success === 1) {
+      if (response.success == 1) {
         return response.data.project_list;
       } else {
         toast.error(response.message);
@@ -38,6 +48,8 @@ export default function Projects() {
       console.error(e);
       toast.error("An unexpected error occurred. Please try again.");
       throw e;
+    } finally {
+      dispatch(setProjectRefetch(false));
     }
   }
 
@@ -88,6 +100,12 @@ export default function Projects() {
     refetch();
   }, [search, currentPage, refetch]);
 
+  useEffect(() => {
+    if (projectRefetch) {
+      refetch();
+    }
+  }, [projectRefetch, refetch]);
+
   return (
     <div className="py-4 custom-container">
       <div className="space-y-4">
@@ -103,6 +121,14 @@ export default function Projects() {
               placeholder="Search here"
             />
           </div>
+
+          <Button
+            onClick={() => dispatch(setAddProject(true))}
+            className="text-white flex items-center justify-center gap-2 rounded-lg bg-neutral-gray text-xs font-medium py-2 px-3"
+          >
+            <Plus size={16} />
+            New folder
+          </Button>
         </div>
       </div>
       <div className="w-full">
@@ -111,11 +137,11 @@ export default function Projects() {
             <LoaderCircle className="animate-spin" size={40} />
           </div>
         ) : data && data.projects.length > 0 ? (
-          <div className="space-y-2 py-4">
-            <ul className="grid grid-cols-2 gap-6">
+          <div className="space-y-6 py-4">
+            <ul className="grid grid-cols-2 gap-4">
               {data.projects.map((project) => (
                 <ProjectBox
-                  key={project.id}
+                  key={project.project_id}
                   project={project}
                   onDelete={() => {
                     setDeleteProjectId(project.project_id);
@@ -128,14 +154,14 @@ export default function Projects() {
               <Button
                 className="project-pagination-btn"
                 onClick={handlePrev}
-                disabled={currentPage === 1}
+                disabled={currentPage == 1}
               >
                 Prev
               </Button>
               <Button
                 className="project-pagination-btn"
                 onClick={handleNext}
-                disabled={currentPage === data.pagination.total_pages}
+                disabled={currentPage == data.pagination.total_pages}
               >
                 Next
               </Button>
@@ -162,6 +188,8 @@ export default function Projects() {
 }
 
 function ProjectBox({ project, onDelete }) {
+  const dispatch = useDispatch();
+
   return (
     <li className="project-box">
       <h4 className="text-xl text-black">{project.project_title}</h4>
@@ -174,7 +202,16 @@ function ProjectBox({ project, onDelete }) {
           className="bg-white shadow  rounded-lg flex flex-col w-44 divide-y divide-snow-white border border-ghost-white"
         >
           <MenuItem className="w-full flex items-center justify-start gap-2 py-1.5 px-2.5 text-sm hover:bg-ghost-white">
-            <Button>
+            <Button
+              onClick={() =>
+                dispatch(
+                  setRenameProjectData({
+                    project_id: project.project_id,
+                    project_title: project.project_title,
+                  })
+                )
+              }
+            >
               <Pen size={14} />
               Rename
             </Button>

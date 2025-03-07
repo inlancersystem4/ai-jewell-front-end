@@ -2,10 +2,14 @@ import lightLogo from "/logo-light.png";
 import { Button } from "@headlessui/react";
 import { FolderPlus, Plus, RotateCcw, Trash2, Folders } from "lucide-react";
 import { useLocation } from "react-router";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router";
+import { setAddProject } from "@/redux/actions";
 
 export default function AppSideBar() {
   const location = useLocation();
+  const dispatch = useDispatch();
+
   const projectActive = location.pathname;
 
   return (
@@ -16,16 +20,21 @@ export default function AppSideBar() {
         </div>
         <div className="pt-2.5 space-y-2">
           <div className="space-y-1">
-            <Button className="sidebar-btn">
+            <Button
+              className="sidebar-btn"
+              onClick={() => dispatch(setAddProject(true))}
+            >
               {" "}
               <FolderPlus />
               New Project
             </Button>
-            <Button className="sidebar-btn bg-[#F7F9FD] !text-onyx-black">
-              {" "}
+            <Link
+              to="/"
+              className={`sidebar-btn bg-[#F7F9FD] !text-onyx-black`}
+            >
               <Plus />
               New chat
-            </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -37,9 +46,7 @@ export default function AppSideBar() {
         </Button>
         <Link
           to="/p"
-          className={`sidebar-btn ${
-            projectActive === "/p" ? "active" : ""
-          }`}
+          className={`sidebar-btn ${projectActive === "/p" ? "active" : ""}`}
         >
           <Folders />
           Projects
