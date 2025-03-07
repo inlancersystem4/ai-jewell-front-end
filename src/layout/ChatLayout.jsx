@@ -7,9 +7,9 @@ export default function ChatLayout() {
   return (
     <main className="w-full flex items-stretch h-dvh">
       <AppSideBar />
-      <section className="w-full h-full flex flex-col">
+      <section className="w-full h-full flex flex-col relative">
         <AppHeader />
-        <div className="h-full w-full px-2 overflow-y-auto">
+        <div className="h-full w-full pt-12">
           <Outlet />
         </div>
       </section>

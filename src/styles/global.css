@@ -59,7 +59,7 @@
 }
 
 .app-sidebar {
-  @apply w-full max-w-[272px] border-e border-cool-gray h-full overflow-y-auto px-2.5 py-4 flex flex-col justify-between gap-12;
+  @apply w-full max-w-[272px] border-e border-cool-gray h-full overflow-y-auto px-2.5 py-3 flex flex-col justify-between gap-12;
 }
 
 .sidebar-btn {
@@ -76,7 +76,7 @@
 }
 
 .app-header {
-  @apply flex items-center justify-between py-2 px-3;
+  @apply flex items-center justify-between py-2 px-3.5 absolute top-0 w-full left-0;
 }
 
 .custom-container {
@@ -89,4 +89,24 @@
 
 .project-pagination-btn {
   @apply text-sm rounded-lg text-center bg-ghost-white py-1.5 px-3.5 disabled:opacity-40;
+}
+
+.chat-input-box {
+  @apply w-full max-w-3xl border border-cool-gray rounded-xl mx-auto;
+}
+
+.chat-input-box .chat-input {
+  @apply p-2 text-sm font-medium w-full outline-none;
+}
+
+.chat-icon-input {
+  @apply min-w-7 min-h-7 max-w-7 max-h-7 flex items-center justify-center rounded-lg hover:bg-off-white disabled:opacity-40;
+}
+
+.chat-icon-input svg {
+  @apply size-4 text-slate-gray;
+}
+
+.chat-send-btn {
+  @apply bg-slate-silver text-white flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-2.5 rounded-lg disabled:opacity-40;
 }
