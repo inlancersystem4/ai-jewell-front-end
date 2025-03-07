@@ -1,9 +1,8 @@
 import lightLogo from "/logo-light.png";
 import { Button } from "@headlessui/react";
 import { FolderPlus, Plus, RotateCcw, Trash2, Folders } from "lucide-react";
-import { useLocation } from "react-router";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router";
+import { Link , useLocation } from "react-router";
 import { setAddProject } from "@/redux/actions";
 
 export default function AppSideBar() {

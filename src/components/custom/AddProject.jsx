@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { post } from "@/utils/axiosWrapper";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useLocation, useNavigate } from "react-router";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -28,6 +29,9 @@ const schema = z.object({
 
 export default function AppProject() {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const projectOpener = useSelector((state) => state.p.addProjectOpen);
   const renameData = useSelector((state) => state.p.reNameProjectData);
 
@@ -51,9 +55,11 @@ export default function AppProject() {
     try {
       const response = await post("p/project-add-edit", formData);
       if (response.success == 1) {
+        if (location.pathname !== "/p") {
+          navigate(`/p/${response.data.project_id}`);
+        }
         if (renameData.project_id) {
           dispatch(setRenameProjectData(""));
-          reset();
         }
         dispatch(setProjectRefetch(true));
         toast.success(response.message);
@@ -78,7 +84,9 @@ export default function AppProject() {
 
   const onClose = () => {
     dispatch(setAddProject(false));
-    reset();
+    reset({
+      name: "",
+    });
   };
 
   useEffect(() => {
@@ -108,7 +116,9 @@ export default function AppProject() {
           <DialogPanel className="max-w-lg  w-full bg-white py-4 px-5 rounded-lg">
             <div className="flex items-center justify-between w-full border-b border-[#F3F4F6] pb-4">
               <DialogTitle className="font-medium text-sm text-onyx-black">
-                Create a new project
+                {renameData.project_title
+                  ? `Rename ${renameData.project_title}`
+                  : "Create a new project"}
               </DialogTitle>
               <Button type="button" onClick={onClose}>
                 <X size={18} />
@@ -152,7 +162,11 @@ export default function AppProject() {
                 className="px-3 py-2 rounded-md text-center bg-warm-gray font-medium text-xs text-white disabled:opacity-40"
                 disabled={mutation.isPending}
               >
-                {mutation.isPending ? "Creating..." : "Create project"}
+                {mutation.isPending
+                  ? "Creating..."
+                  : renameData.project_title
+                  ? "Save Project"
+                  : "Crete Project"}
               </button>
             </div>
           </DialogPanel>

@@ -21,6 +21,7 @@ import {
   setRenameProjectData,
   setProjectRefetch,
 } from "@/redux/actions";
+import { Link } from "react-router";
 
 export default function Projects() {
   const dispatch = useDispatch();
@@ -192,7 +193,9 @@ function ProjectBox({ project, onDelete }) {
 
   return (
     <li className="project-box">
-      <h4 className="text-xl text-black">{project.project_title}</h4>
+      <Link to={`/p/${project.project_id}`} className="text-xl text-black">
+        {project.project_title}
+      </Link>
       <Menu>
         <MenuButton className="min-w-10 min-h-10 max-w-10 max-h-10 flex items-center justify-center">
           <EllipsisVertical className="size-4" />
